@@ -88,6 +88,22 @@ public class MainActivity extends AppCompatActivity {
         imgList.add("http://img1.cache.netease.com/catchpic/A/A9/A99354C0C691252F77F6F724FF9EC5A3.jpg");
         imgList.add("http://pic111.nipic.com/file/20161001/14764927_164235222032_2.jpg");
 
+        imgList.add("http://pic8.nipic.com/20100726/4955600_124426101612_2.jpg");
+        imgList.add("http://pic7.nipic.com/20100429/809626_103543002699_2.jpg");
+        imgList.add("http://pic26.nipic.com/20121213/10143726_111843041304_2.jpg");
+        imgList.add("http://pic78.nipic.com/file/20150916/21196032_182144578000_2.jpg");
+        imgList.add("http://pic39.nipic.com/20140312/6608733_214616579000_2.jpg");
+        imgList.add("http://img1.cache.netease.com/catchpic/A/A9/A99354C0C691252F77F6F724FF9EC5A3.jpg");
+        imgList.add("http://pic111.nipic.com/file/20161001/14764927_164235222032_2.jpg");
+
+        imgList.add("http://pic8.nipic.com/20100726/4955600_124426101612_2.jpg");
+        imgList.add("http://pic7.nipic.com/20100429/809626_103543002699_2.jpg");
+        imgList.add("http://pic26.nipic.com/20121213/10143726_111843041304_2.jpg");
+        imgList.add("http://pic78.nipic.com/file/20150916/21196032_182144578000_2.jpg");
+        imgList.add("http://pic39.nipic.com/20140312/6608733_214616579000_2.jpg");
+        imgList.add("http://img1.cache.netease.com/catchpic/A/A9/A99354C0C691252F77F6F724FF9EC5A3.jpg");
+        imgList.add("http://pic111.nipic.com/file/20161001/14764927_164235222032_2.jpg");
+
         LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) mClothesIV.getLayoutParams();
         for (int i = 0; i < imgList.size(); i++) {
             String url = imgList.get(i);

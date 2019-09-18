@@ -41,7 +41,7 @@
 
             <ImageView
                 android:id="@+id/iv_clothes_show"
-                android:layout_width="150dp"
+                android:layout_width="350dp"
                 android:layout_height="match_parent"
                 android:padding="5dp"
                 android:src="@mipmap/ic_launcher"
