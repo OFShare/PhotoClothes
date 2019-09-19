@@ -32,6 +32,7 @@ import android.widget.ScrollView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.jd.vzer.clothes.http.ImageUploader;
 
 import org.xml.sax.ErrorHandler;
 
@@ -340,6 +341,20 @@ public class MainActivity extends AppCompatActivity implements Camera.PreviewCal
         Bitmap bmp = BitmapFactory.decodeByteArray(stream.toByteArray(), 0, stream.size());
         //对位图进行处理，如显示，保存等
         final Bitmap bitmap = bmp;
+
+        Thread thread = new Thread(new Runnable() {
+          @Override
+          public void run() {
+            try  {
+              //Your code goes here
+              ImageUploader.upLoad();
+            } catch (Exception e) {
+              e.printStackTrace();
+            }
+          }
+        });
+        thread.start();
+
         runOnUiThread(new Runnable() {
           @Override
           public void run() {
