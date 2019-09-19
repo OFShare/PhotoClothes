@@ -25,7 +25,7 @@ class Size {
 }
 
 class Constants {
-  static int DisplayOrientation = 0;
+  static int DisplayOrientation = 90;
 }
 
 public class CameraConnection {

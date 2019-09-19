@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
+import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.graphics.YuvImage;
 import android.graphics.drawable.Drawable;
@@ -46,8 +47,8 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements Camera.PreviewCallback {
   private static final int REQUEST_CODE_FILECHOOSER = 1;
-  private Button mSelectBtn;
-  private ImageView mShowIv;
+//  private Button mSelectBtn;
+//  private ImageView mShowIv;
   private LinearLayout mClothesView;
   private ImageView mClothesIV;
   private TextureView textureView;
@@ -69,6 +70,7 @@ public class MainActivity extends AppCompatActivity implements Camera.PreviewCal
   private final String WRITE_PREMISSION = "android.permission.WRITE_EXTERNAL_STORAGE";
   private final int CAMERA_CODE = 10;
   private static Size DESIRED_PREVIEW_SIZE = new Size(640, 480);
+  private final float sizeRatio = 640.0f / 480.0f;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -86,12 +88,21 @@ public class MainActivity extends AppCompatActivity implements Camera.PreviewCal
 
   private void initView() {
     textureView = findViewById(R.id.textureView);
+    //view绘制完成后回调此方法
+    textureView.post(new Runnable() {
+      @Override
+      public void run() {
+        float width = textureView.getWidth();
+        float height = width * sizeRatio;
+        textureView.getLayoutParams().height = (int) height;
+      }
+    });
     imageView = findViewById(R.id.imageView);
-    mSelectBtn = findViewById(R.id.btn_select_picture);
-    mShowIv = findViewById(R.id.iv_user_show);
+//    mSelectBtn = findViewById(R.id.btn_select_picture);
+//    mShowIv = findViewById(R.id.iv_user_show);
     mClothesView = findViewById(R.id.sv_clothes_show);
     mClothesIV = findViewById(R.id.iv_clothes_show);
-    mSelectBtn.setOnClickListener(selectListener);
+//    mSelectBtn.setOnClickListener(selectListener);
   }
 
   private void initData() {
@@ -125,7 +136,7 @@ public class MainActivity extends AppCompatActivity implements Camera.PreviewCal
     for (int i = 0; i < imgList.size(); i++) {
       String url = imgList.get(i);
       ImageView itemView = new ImageView(this);
-      itemView.setTag(R.id.btn_select_picture, url);
+      itemView.setTag(R.id.iv_clothes_show, url);
       itemView.setLayoutParams(params);
       //网络图片加载
       Glide.with(MainActivity.this)
@@ -140,7 +151,7 @@ public class MainActivity extends AppCompatActivity implements Camera.PreviewCal
   private View.OnClickListener clothesListener = new View.OnClickListener() {
     @Override
     public void onClick(View v) {
-      String url = (String) v.getTag(R.id.btn_select_picture);
+      String url = (String) v.getTag(R.id.iv_clothes_show);
       if (url != null) {
         //记录当前选中衣服url
         clothesUrl = url;
@@ -247,7 +258,7 @@ public class MainActivity extends AppCompatActivity implements Camera.PreviewCal
         result = createCameraTempFile();
       }
       try {
-        mShowIv.setImageBitmap(getBitmapFormUri(MainActivity.this, result));
+//        mShowIv.setImageBitmap(getBitmapFormUri(MainActivity.this, result));
 
       } catch (Exception e) {
         e.printStackTrace();
@@ -339,8 +350,12 @@ public class MainActivity extends AppCompatActivity implements Camera.PreviewCal
         image.compressToJpeg(new Rect(0, 0, size.width, size.height), 80, stream);
 
         Bitmap bmp = BitmapFactory.decodeByteArray(stream.toByteArray(), 0, stream.size());
+        Matrix matrix = new Matrix();
+        matrix.setRotate(270);
+        Log.d("CZW",bmp.getWidth()+"--"+bmp.getHeight());
+        // 围绕原地进行旋转
+        final Bitmap newBM = Bitmap.createBitmap(bmp, 0, 0, bmp.getWidth(), bmp.getHeight(), matrix, false);
         //对位图进行处理，如显示，保存等
-        final Bitmap bitmap = bmp;
 
         Thread thread = new Thread(new Runnable() {
           @Override
@@ -358,7 +373,7 @@ public class MainActivity extends AppCompatActivity implements Camera.PreviewCal
         runOnUiThread(new Runnable() {
           @Override
           public void run() {
-            imageView.setImageBitmap(bitmap);
+            imageView.setImageBitmap(newBM);
           }
         });
 
