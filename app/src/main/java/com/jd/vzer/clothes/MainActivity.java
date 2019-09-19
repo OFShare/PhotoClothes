@@ -5,6 +5,9 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.ImageFormat;
+import android.graphics.Rect;
+import android.graphics.YuvImage;
 import android.graphics.drawable.Drawable;
 import android.hardware.Camera;
 import android.net.Uri;
@@ -18,6 +21,7 @@ import android.support.v4.content.FileProvider;
 import android.support.v4.content.PermissionChecker;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.TextureView;
 import android.view.View;
 import android.widget.Button;
@@ -323,17 +327,31 @@ public class MainActivity extends AppCompatActivity implements Camera.PreviewCal
     return bitmap;
   }
 
-  //摄像头回调
+  //摄像头回调,数据格式是(camera API 1)yuv默认格式NV21
   @Override
   public void onPreviewFrame(byte[] data, Camera camera) {
-    //TODO  yuv 转换
-    final Bitmap bitmap = null;
+    try {
+      Camera.Size size = camera.getParameters().getPreviewSize();
+      YuvImage image = new YuvImage(data, ImageFormat.NV21, size.width, size.height, null);
+      if (image != null) {
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        image.compressToJpeg(new Rect(0, 0, size.width, size.height), 80, stream);
 
-    runOnUiThread(new Runnable() {
-      @Override
-      public void run() {
-        imageView.setImageBitmap(bitmap);
+        Bitmap bmp = BitmapFactory.decodeByteArray(stream.toByteArray(), 0, stream.size());
+        //对位图进行处理，如显示，保存等
+        final Bitmap bitmap = bmp;
+        runOnUiThread(new Runnable() {
+          @Override
+          public void run() {
+            imageView.setImageBitmap(bitmap);
+          }
+        });
+
+        stream.close();
       }
-    });
+    } catch (Exception ex) {
+      Log.e("yuv convert to bitmap", "Error:" + ex.getMessage());
+    }
+
   }
 }
