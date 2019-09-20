@@ -47,7 +47,7 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements Camera.PreviewCallback {
   private static final int REQUEST_CODE_FILECHOOSER = 1;
-//  private Button mSelectBtn;
+  //  private Button mSelectBtn;
 //  private ImageView mShowIv;
   private LinearLayout mClothesView;
   private ImageView mClothesIV;
@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity implements Camera.PreviewCal
   private final String WRITE_PREMISSION = "android.permission.WRITE_EXTERNAL_STORAGE";
   private final int CAMERA_CODE = 10;
   private static Size DESIRED_PREVIEW_SIZE = new Size(640, 480);
-  private final float sizeRatio = 640.0f / 480.0f;
+  private final float sizeRatio = 480.0f / 640.0f;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -92,9 +92,9 @@ public class MainActivity extends AppCompatActivity implements Camera.PreviewCal
     textureView.post(new Runnable() {
       @Override
       public void run() {
-        float width = textureView.getWidth();
-        float height = width * sizeRatio;
-        textureView.getLayoutParams().height = (int) height;
+        float height = textureView.getHeight();
+        float width = height * sizeRatio;
+        textureView.getLayoutParams().width = (int) width;
       }
     });
     imageView = findViewById(R.id.imageView);
@@ -339,48 +339,51 @@ public class MainActivity extends AppCompatActivity implements Camera.PreviewCal
     return bitmap;
   }
 
-  //摄像头回调,数据格式是(camera API 1)yuv默认格式NV21
+  boolean isFinish = true;
+  // 摄像头回调,数据格式是(camera API 1)yuv默认格式NV21
+  // onPreviewFrame会一直回调，所以需要用个isFinish变量判断是否当前的执行完
+  // bitmap需要手动主动释放
   @Override
-  public void onPreviewFrame(byte[] data, Camera camera) {
+  public void onPreviewFrame(final byte[] data, final Camera camera) {
     try {
-      Camera.Size size = camera.getParameters().getPreviewSize();
-      YuvImage image = new YuvImage(data, ImageFormat.NV21, size.width, size.height, null);
-      if (image != null) {
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        image.compressToJpeg(new Rect(0, 0, size.width, size.height), 80, stream);
+      if (!isFinish) return;
+      isFinish = false;
 
-        Bitmap bmp = BitmapFactory.decodeByteArray(stream.toByteArray(), 0, stream.size());
-        Matrix matrix = new Matrix();
-        matrix.setRotate(270);
-        Log.d("CZW",bmp.getWidth()+"--"+bmp.getHeight());
-        // 围绕原地进行旋转
-        final Bitmap newBM = Bitmap.createBitmap(bmp, 0, 0, bmp.getWidth(), bmp.getHeight(), matrix, false);
-        //对位图进行处理，如显示，保存等
+      Thread thread = new Thread(new Runnable() {
+        @Override
+        public void run() {
+          try {
+            // Your code goes here
+            Camera.Size size = camera.getParameters().getPreviewSize();
+            YuvImage image = new YuvImage(data, ImageFormat.NV21, size.width, size.height, null);
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            image.compressToJpeg(new Rect(0, 0, size.width, size.height), 80, stream);
+            Bitmap bmp = BitmapFactory.decodeByteArray(stream.toByteArray(), 0, stream.size());
 
-        Thread thread = new Thread(new Runnable() {
-          @Override
-          public void run() {
-            try  {
-              //Your code goes here
-              ImageUploader.upLoad();
-            } catch (Exception e) {
-              e.printStackTrace();
-            }
+            Matrix matrix = new Matrix();
+            matrix.setRotate(270);
+            // 围绕原地进行旋转
+            final Bitmap newBM =
+                Bitmap.createBitmap(bmp, 0, 0, bmp.getWidth(), bmp.getHeight(), matrix, false);
+            //对位图进行处理，如显示，保存等
+            ImageUploader.upLoad();
+            runOnUiThread(new Runnable() {
+              @Override
+              public void run() {
+                imageView.setImageBitmap(newBM);
+              }
+            });
+            stream.close();
+            isFinish = true;
+          } catch (Exception e) {
+            Log.e("onPreviewFrame", "Error:" + e.getMessage());
           }
-        });
-        thread.start();
+        }
+      });
+      thread.start();
 
-        runOnUiThread(new Runnable() {
-          @Override
-          public void run() {
-            imageView.setImageBitmap(newBM);
-          }
-        });
-
-        stream.close();
-      }
-    } catch (Exception ex) {
-      Log.e("yuv convert to bitmap", "Error:" + ex.getMessage());
+    } catch (Exception e) {
+      Log.e("onPreviewFrame", "Error:" + e.getMessage());
     }
 
   }
