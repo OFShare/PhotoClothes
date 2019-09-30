@@ -45,43 +45,11 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingLeft="10dp"
-        android:text="标题1"
-        android:background="@color/colorAccent"
-        android:textColor="#000000"
-        android:textSize="16sp" />
-
-    <HorizontalScrollView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
-
-        <LinearLayout
-            android:id="@+id/sv_clothes_show_1"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:id="@+id/iv_clothes_show_1"
-                android:layout_width="350dp"
-                android:layout_height="match_parent"
-                android:padding="5dp"
-                android:paddingRight="5dp"
-                android:scaleType="fitCenter"
-                android:src="@mipmap/ic_launcher" />
-        </LinearLayout>
-
-    </HorizontalScrollView>
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingLeft="10dp"
-        android:text="标题1"
-        android:background="@color/colorAccent"
-        android:textColor="#000000"
-        android:textSize="16sp" />
+        android:gravity="center"
+        android:text="换衣 Try-on"
+        android:background="#2196F3"
+        android:textColor="#ECEFF1"
+        android:textSize="26sp" />
 
     <HorizontalScrollView
         android:layout_width="match_parent"
@@ -106,5 +74,36 @@
 
     </HorizontalScrollView>
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="推荐 Recommendation"
+        android:background="#2196F3"
+        android:textColor="#ECEFF1"
+        android:textSize="26sp" />
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:id="@+id/sv_clothes_recommended"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/iv_clothes_show_recommend"
+                android:layout_width="350dp"
+                android:layout_height="match_parent"
+                android:padding="5dp"
+                android:paddingRight="5dp"
+                android:scaleType="fitCenter"
+                android:src="@mipmap/ic_launcher" />
+        </LinearLayout>
+
+    </HorizontalScrollView>
 
 </LinearLayout>
